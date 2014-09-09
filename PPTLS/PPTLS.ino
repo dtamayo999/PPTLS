@@ -63,7 +63,7 @@ void setup()
 
 String preguntar()
 {
-	Serial.print(".....Haga su movimiento....");
+	Serial.println(".....Haga su movimiento....");
 	String jugada = "";
 	while(jugada=="")
 	{
