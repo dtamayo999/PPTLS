@@ -76,129 +76,129 @@ String preguntar()
 	return jugada;
 }
 
+String preguntarestado()
+{
+	Serial.println("Desea conocer sus estadisticas? (si / no)");
+	String respuesta = "";
+	while(respuesta=="")
+	{
+	  respuesta = leeropcion();  // statement
+	}
+	return respuesta;
+}
+
 String leeropcion()
 {
-	String movimiento = "";
-	while(Serial.available())                        // que diferencia hay si pongo un if o un while???
+	String respuestausuario = "";
+	while(Serial.available())                        
 	{                    
-	   movimiento.concat(char(Serial.read()));                   // statement
+	   respuestausuario.concat(char(Serial.read()));                   // statement
 	   delay(10);
 	}
-	return movimiento;
+	return respuestausuario;
 }
 
 int ganoperdio()                                   // que diferencia hay entre bool y boolean?????
 {
+
 	String usuario = preguntar();
-	uint8_t totalpartidas = EEPROM.read(10) + EEPROM.read(11);
-
-	if(usuario=="estado")
-	{
-		Serial.println("sus resultados son:");  
-		Serial.print("El numero total de partidas jugadas es:  ");
-		Serial.println(totalpartidas);
-		Serial.println("el numero de victorias es: " + String(EEPROM.read(10)));
-		Serial.println("el numero de perdidas es: " + String(EEPROM.read(11)));
-		Serial.println("Buena suerte");
-		Serial.print("\n");
+	while(usuario!="piedra" && usuario!="papel" && usuario!="tijera" && usuario!="lagartija" && usuario!="spock"){
+		Serial.println("Su jugada es invalida");
+	  usuario = preguntar();  // statement
 	}
-	else
+	uint8_t pc = AI.juegopc();
+
+	if (usuario=="piedra")
 	{
-		uint8_t pc = AI.juegopc();
-		
-
-		if (usuario=="piedra")
+		if ((pc==2)||(pc==3))
 		{
-			if ((pc==2)||(pc==3))
-			{
-				Serial.println ("Ganaste");
-				return 1;
-			}
-			if (pc==0)
-			{
-				Serial.println ("Empate");
-				return 0;
-			}
-			else
-			{
-				Serial.println ("Perdiste");
-				return -1;
-			}
+			Serial.println ("Has ganado");
+			return 1;
 		}
-		else if (usuario=="papel")
+		if (pc==0)
 		{
-			if ((pc==0)||(pc==4))
-			{
-				Serial.println ("Ganaste");
-				return 1;
-			}
-			if (pc==1)
-			{
-				Serial.println ("Empate");
-				return 0;
-			}
-			else
-			{
-				Serial.println ("Perdiste");
-				return -1;
-			}
+			Serial.println ("Ha habido un empate");
+			return 0;
 		}
-		else if (usuario=="tijera")
+		else
 		{
-			if ((pc==1)||(pc==3))
-			{
-				Serial.println ("Ganaste");
-				return 1;
-			}
-			if (pc==2)
-			{
-				Serial.println ("Empate");
-				return 0;
-			}
-			else
-			{
-				Serial.println ("Perdiste");
-				return -1;
-			}
+			Serial.println ("Has perdido");
+			return -1;
 		}
-		else if (usuario=="lagartija")
-		{
-			if ((pc==1)||(pc==4))
-			{
-				Serial.println ("Ganaste");
-				return 1;
-			}
-			if (pc==3)
-			{
-				Serial.println ("Empate");
-				return 0;
-			}
-			else
-			{
-				Serial.println ("Perdiste");
-				return -1;
-			}
-		}
-		else if (usuario=="spock")
-		{
-			if ((pc==0)||(pc==2))
-			{
-				Serial.println ("Ganaste");
-				return 1;
-			}
-			if (pc==4)
-			{
-				Serial.println ("Empate");
-				return 0;
-			}
-			else
-			{
-				Serial.println ("Perdiste");
-				return -1;
-			}
-		}
-
 	}
+	else if (usuario=="papel")
+	{
+		if ((pc==0)||(pc==4))
+		{
+			Serial.println ("Has ganado");
+			return 1;
+		}
+		if (pc==1)
+		{
+			Serial.println ("Ha habido un empate");
+			return 0;
+		}
+		else
+		{
+			Serial.println ("Has perdido");
+			return -1;
+		}
+	}
+	else if (usuario=="tijera")
+	{
+		if ((pc==1)||(pc==3))
+		{
+			Serial.println ("Has ganado");
+			return 1;
+		}
+		if (pc==2)
+		{
+			Serial.println ("Ha habido un empate");
+			return 0;
+		}
+		else
+		{
+			Serial.println ("Has perdido");
+			return -1;
+		}
+	}
+	else if (usuario=="lagartija")
+	{
+		if ((pc==1)||(pc==4))
+		{
+			Serial.println ("Has ganado");
+			return 1;
+		}
+		if (pc==3)
+		{
+			Serial.println ("Ha habido un empate");
+			return 0;
+		}
+		else
+		{
+			Serial.println ("Has perdido");
+			return -1;
+		}
+	}
+	else if (usuario=="spock")
+	{
+		if ((pc==0)||(pc==2))
+		{
+			Serial.println ("Has ganado");
+			return 1;
+		}
+		if (pc==4)
+		{
+			Serial.println ("Ha habido un empate");
+			return 0;
+		}
+		else
+		{
+			Serial.println ("Has perdido");
+			return -1;
+		}
+	}
+
 }
 
 void loop()
@@ -209,6 +209,24 @@ void loop()
 	uint8_t totalganado = 0;
 	uint8_t totalperdido = 0;
 	bool playing = false;
+	uint8_t totalpartidas = EEPROM.read(10) + EEPROM.read(11);
+
+	String estado ="";
+	while(estado==""){
+	 estado = preguntarestado();   // statement
+	}
+
+	if(estado=="si")
+	{
+		Serial.println("sus resultados son:");  
+		Serial.print("El numero total de partidas jugadas es:  ");
+		Serial.println(totalpartidas);
+		Serial.println("el numero de victorias es: " + String(EEPROM.read(10)));
+		Serial.println("el numero de perdidas es: " + String(EEPROM.read(11)));
+		Serial.print("\n");
+		Serial.println("Buena suerte");
+		Serial.print("\n");
+	}
 
 	while(numeropartidas == 0){
   numeropartidas = numpartidas() ; // statement
