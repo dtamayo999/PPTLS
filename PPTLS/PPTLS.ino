@@ -8,7 +8,7 @@ const char* opciones[] = {"Piedra", "Papel", "Tijera", "Lagartija", "´pock"};
 class comp
 {
 	public:
-    comp();
+	comp();
 	uint8_t victorias;
 	uint8_t perdidas;
 	float ratio();
@@ -22,7 +22,7 @@ comp::comp()
 }
 
 
-uint8_t comp::juegopc()                                    // porque esta no puede ser una funcion normal y se tiene que hacer con pc::juegopc
+uint8_t comp::juegopc()                                    
 {
 	uint8_t pcseleccion = random(0, 4.99);
 	Serial.print("Su oponente selecciono: ");
@@ -36,20 +36,24 @@ comp AI = comp();
 uint8_t numpartidas()
 {
 	uint8_t intpartidas = 0;
-	Serial.print("Ingrese el numero de partidas a jugar (1, 3 o 5)");
-	while(Serial.available())
+	Serial.println("Ingrese el numero de partidas a jugar (1, 3 o 5)");
+	while(intpartidas==0)
 	{
 		String partidas = leeropcion();
-	  if(partidas == "1"){
-	    intpartidas = 1;   
+		if(partidas == "1"){
+			intpartidas = 1;   
 	    }  // statement
-	   
-	   if(partidas == "3"){
-	     	intpartidas = 3;   
-	   }
-	   if (partidas == "5"){
-	    	intpartidas ==5;
+	    
+	    if(partidas == "3"){
+	    	intpartidas = 3;   
 	    }
+	    if (partidas == "5"){
+	    	intpartidas =5;
+	    }
+	    if (partidas != 0 && partidas != "1" && partidas != "3" && partidas != "5"){
+	    	Serial.println("El numero de partidas("+partidas+") es invalido, deben ser 1, 3 o 5 partidas");
+	    	intpartidas = 0;
+	    } 
 	}
 	return intpartidas;
 }
@@ -86,143 +90,160 @@ String leeropcion()
 int ganoperdio()                                   // que diferencia hay entre bool y boolean?????
 {
 	String usuario = preguntar();
+	uint8_t totalpartidas = EEPROM.read(10) + EEPROM.read(11);
 
 	if(usuario=="estado")
 	{
-	Serial.println("sus resultados son:");  
-	Serial.println("El numero total de partidas jugadas es:  totalpartidas");
-	Serial.println("el numero de victorias es: " + String(EEPROM.read(10)));
-	Serial.println("el numero de perdidas es: " + String(EEPROM.read(11)));
-	Serial.println("Buena suerte");
-	Serial.print("\n");
+		Serial.println("sus resultados son:");  
+		Serial.print("El numero total de partidas jugadas es:  ");
+		Serial.println(totalpartidas);
+		Serial.println("el numero de victorias es: " + String(EEPROM.read(10)));
+		Serial.println("el numero de perdidas es: " + String(EEPROM.read(11)));
+		Serial.println("Buena suerte");
+		Serial.print("\n");
 	}
 	else
 	{
-	uint8_t pc = AI.juegopc();
-	
+		uint8_t pc = AI.juegopc();
+		
 
-if (usuario=="piedra")
- {
- 	if ((pc==2)||(pc==3))
- 	{
- 		Serial.println ("Ganaste");
- 		return 1;
- 	}
- 	if (pc==0)
- 	{
- 		Serial.println ("Empate");
- 		return 0;
- 	}
- 	else
- 	{
- 		Serial.println ("Perdiste");
- 		return -1;
- 	}
- }
-  else if (usuario=="papel")
- {
- 	if ((pc==0)||(pc==4))
- 	{
- 		Serial.println ("Ganaste");
- 		return 1;
- 	}
- 	if (pc==1)
- 	{
- 		Serial.println ("Empate");
- 		return 0;
- 	}
- 	else
- 	{
- 		Serial.println ("Perdiste");
- 		return -1;
- 	}
- }
-   else if (usuario=="tijera")
- {
- 	if ((pc==1)||(pc==3))
- 	{
- 		Serial.println ("Ganaste");
- 		return 1;
- 	}
- 	if (pc==2)
- 	{
- 		Serial.println ("Empate");
- 		return 0;
- 	}
- 	else
- 	{
- 		Serial.println ("Perdiste");
- 		return -1;
- 	}
- }
-   else if (usuario=="lagartija")
- {
- 	if ((pc==1)||(pc==4))
- 	{
- 		Serial.println ("Ganaste");
- 		return 1;
- 	}
- 	if (pc==3)
- 	{
- 		Serial.println ("Empate");
- 		return 0;
- 	}
- 	else
- 	{
- 		Serial.println ("Perdiste");
- 		return -1;
- 	}
- }
-    else if (usuario=="spock")
- {
- 	if ((pc==0)||(pc==2))
- 	{
- 		Serial.println ("Ganaste");
- 		return 1;
- 	}
- 	if (pc==4)
- 	{
- 		Serial.println ("Empate");
- 		return 0;
- 	}
- 	else
- 	{
- 		Serial.println ("Perdiste");
- 		return -1;
- 	}
- }
+		if (usuario=="piedra")
+		{
+			if ((pc==2)||(pc==3))
+			{
+				Serial.println ("Ganaste");
+				return 1;
+			}
+			if (pc==0)
+			{
+				Serial.println ("Empate");
+				return 0;
+			}
+			else
+			{
+				Serial.println ("Perdiste");
+				return -1;
+			}
+		}
+		else if (usuario=="papel")
+		{
+			if ((pc==0)||(pc==4))
+			{
+				Serial.println ("Ganaste");
+				return 1;
+			}
+			if (pc==1)
+			{
+				Serial.println ("Empate");
+				return 0;
+			}
+			else
+			{
+				Serial.println ("Perdiste");
+				return -1;
+			}
+		}
+		else if (usuario=="tijera")
+		{
+			if ((pc==1)||(pc==3))
+			{
+				Serial.println ("Ganaste");
+				return 1;
+			}
+			if (pc==2)
+			{
+				Serial.println ("Empate");
+				return 0;
+			}
+			else
+			{
+				Serial.println ("Perdiste");
+				return -1;
+			}
+		}
+		else if (usuario=="lagartija")
+		{
+			if ((pc==1)||(pc==4))
+			{
+				Serial.println ("Ganaste");
+				return 1;
+			}
+			if (pc==3)
+			{
+				Serial.println ("Empate");
+				return 0;
+			}
+			else
+			{
+				Serial.println ("Perdiste");
+				return -1;
+			}
+		}
+		else if (usuario=="spock")
+		{
+			if ((pc==0)||(pc==2))
+			{
+				Serial.println ("Ganaste");
+				return 1;
+			}
+			if (pc==4)
+			{
+				Serial.println ("Empate");
+				return 0;
+			}
+			else
+			{
+				Serial.println ("Perdiste");
+				return -1;
+			}
+		}
 
-}
+	}
 }
 
 void loop()
 {
 
-uint8_t cont = 0;
-uint8_t numeropartidas = numpartidas();
-bool playing = true;
-while (playing == true)
-{
+	uint8_t cont = 0;
+	uint8_t numeropartidas = 0;
+	uint8_t totalganado = 0;
+	uint8_t totalperdido = 0;
+	bool playing = false;
+
+	while(numeropartidas == 0){
+  numeropartidas = numpartidas() ; // statement
+  playing = true;
+}
+
+while (playing == true){
 
 	int resultado = ganoperdio();
 
 	if(resultado==1)
 	{
-	   AI.victorias++;
-	   cont++;
-	   EEPROM.write(10, AI.victorias);
+		AI.victorias++;
+		cont++;
+		totalganado++;
+		EEPROM.write(10, AI.victorias);
 	}    
 	else if (resultado==-1)
 	{
 		AI.perdidas++;
 		cont++;
-		 EEPROM.write(11, AI.perdidas);
+		totalperdido++;
+		EEPROM.write(11, AI.perdidas);
 	}
 
-if(cont == numeropartidas)
-{
-   playing = false; 
-}
+	if(cont == numeropartidas)
+	{
+		if(totalganado>totalperdido){
+			Serial.println("has Ganado el juego");  
+		}
+		else{
+			Serial.println("has perdido el juego, suerte para la proxima"); 
+		}
+		playing = false; 
 	}
+}
 
 }
